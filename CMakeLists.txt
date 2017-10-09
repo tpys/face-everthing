@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.6)
 project(cl_face C CXX)
 
 # Build options
@@ -6,18 +6,16 @@ option(BUILD_EXAMPLES  "Set to ON to build examples"  ON)
 option(USE_OPENMP      "Set to ON to build use openmp"  ON)
 option(USE_SSE         "Set to ON to build use SSE"  ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
-
 # Use C++11
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-message(STATUS "C++11 support has been enabled by default.")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11")
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -gencode arch=compute_61,code=sm_61)
+
 
 # Use SSE
 if (USE_SSE)
     add_definitions(-DUSE_SSE)
     message(STATUS "Use SSE")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
 endif()
 
 # Use OpenMP
@@ -32,38 +30,58 @@ if (USE_OPENMP)
     endif()
 endif()
 
+#Use OpenCV
+find_package(OpenCV)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+
+#Use Boost
+find_package(Boost COMPONENTS system filesystem REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
+link_directories(${Boost_LIBRARY_DIR})
+
+#Use Caffe
+include_directories(/home/tpys/tools/caffe/distribute/include)
+link_directories(/home/tpys/tools/caffe/distribute/lib)
+add_definitions(-DUSE_CAFFE)
+
+
+#Use CUDA
+find_package(CUDA REQUIRED)
+include_directories(/usr/local/cuda-8.0/include)
+
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/api)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/detection/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/alignment/include)
+file(GLOB_RECURSE include_files ${CMAKE_CURRENT_SOURCE_DIR}/cpp_modules/*.h)
+foreach(file_path ${include_files})
+    get_filename_component(dir_path ${file_path} PATH)
+    include_directories(${dir_path})
+endforeach()
 
-file(GLOB detect_src
-        detection/src/util/*.cpp
-        detection/src/io/*.cpp
-        detection/src/feat/*.cpp
-        detection/src/classifier/*.cpp
-        detection/src/*.cpp)
 
-file(GLOB alignment_src alignment/src/*.cpp)
-
+file(GLOB_RECURSE detection_src cpp_modules/detection/src/*.cpp)
+file(GLOB_RECURSE alignment_src cpp_modules/alignment/src/*.cpp cpp_modules/alignment/src/*.c)
+file(GLOB_RECURSE recognition_src cpp_modules/recognition/src/*.cpp)
 
 # Build shared library
-add_library(detect_lib SHARED ${detect_src})
-add_library(alignment_lib SHARED ${alignment_src})
-set(detect_required_libs detect_lib)
-set(alignment_required_libs alignment_lib)
+set(BUILD_SHARED_LIBS ON)
+add_library(detection_lib ${detection_src})
+add_library(alignment_lib ${alignment_src})
+add_library(recognition_lib ${recognition_src})
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cpp_modules)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp_modules/openpose)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp_modules/tracking)
 
 
 # Build examples
 if (BUILD_EXAMPLES)
     message(STATUS "Build with examples.")
-    find_package(OpenCV)
-    if (NOT OpenCV_FOUND)
-        message(WARNING "OpenCV not found. Test will not be built.")
-    else()
-        include_directories(${OpenCV_INCLUDE_DIRS})
-        list(APPEND face_app_libs ${OpenCV_LIBS} detect_lib alignment_lib)
-        add_executable(face_app example/face_app_example.cpp)
-        target_link_libraries(face_app ${face_app_libs})
-    endif()
+    list(APPEND face_app_libs detection_lib alignment_lib recognition_lib core face utilities caffe glog ${OpenCV_LIBS})
+    add_executable(face_alignment cpp_modules/example/face_alignment.cpp)
+    target_link_libraries(face_alignment ${face_app_libs})
+    add_executable(video_conference cpp_modules/example/face_all_in_one.cpp)
+    target_link_libraries(video_conference ${face_app_libs})
+    add_executable(mtcnn_align_dataset cpp_modules/example/mtcnn_align.cpp)
+    target_link_libraries(mtcnn_align_dataset ${face_app_libs} boost_filesystem)
 endif()
