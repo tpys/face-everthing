@@ -46,7 +46,7 @@
 
 using namespace LandmarkDetector;
 
-// Getting a head pose estimate from the currently detected landmarks (rotation with respect to point camera)
+// Getting a head pose estimate from the currently detected landmarks (rotation with respect to point utils)
 // The format returned is [Tx, Ty, Tz, Eul_x, Eul_y, Eul_z]
 cv::Vec6d LandmarkDetector::GetPoseCamera(const CLNF& clnf_model, double fx, double fy, double cx, double cy)
 {
@@ -76,7 +76,7 @@ cv::Vec6d LandmarkDetector::GetPoseWorld(const CLNF& clnf_model, double fx, doub
 		double X = ((clnf_model.params_global[4] - cx) * (1.0/fx)) * Z;
 		double Y = ((clnf_model.params_global[5] - cy) * (1.0/fy)) * Z;
 	
-		// Here we correct for the camera orientation, for this need to determine the angle the camera makes with the head pose
+		// Here we correct for the utils orientation, for this need to determine the angle the utils makes with the head pose
 		double z_x = cv::sqrt(X * X + Z * Z);
 		double eul_x = atan2(Y, z_x);
 
@@ -98,7 +98,7 @@ cv::Vec6d LandmarkDetector::GetPoseWorld(const CLNF& clnf_model, double fx, doub
 	}
 }
 
-// Getting a head pose estimate from the currently detected landmarks, with appropriate correction due to orthographic camera issue
+// Getting a head pose estimate from the currently detected landmarks, with appropriate correction due to orthographic utils issue
 // This is because rotation estimate under orthographic assumption is only correct close to the centre of the image
 // This method returns a corrected pose estimate with respect to world coordinates (Experimental)
 // The format returned is [Tx, Ty, Tz, Eul_x, Eul_y, Eul_z]
@@ -127,7 +127,7 @@ cv::Vec6d LandmarkDetector::GetCorrectedPoseWorld(const CLNF& clnf_model, double
 
 		// Solving the PNP model
 
-		// The camera matrix
+		// The utils matrix
 		cv::Matx33d camera_matrix(fx, 0, cx, 0, fy, cy, 0, 0, 1);
 		
 		cv::Vec3d vec_trans(X, Y, Z);
@@ -146,7 +146,7 @@ cv::Vec6d LandmarkDetector::GetCorrectedPoseWorld(const CLNF& clnf_model, double
 }
 
 // Getting a head pose estimate from the currently detected landmarks, with appropriate correction due to perspective projection
-// This method returns a corrected pose estimate with respect to a point camera (NOTE not the world coordinates) (Experimental)
+// This method returns a corrected pose estimate with respect to a point utils (NOTE not the world coordinates) (Experimental)
 // The format returned is [Tx, Ty, Tz, Eul_x, Eul_y, Eul_z]
 cv::Vec6d LandmarkDetector::GetCorrectedPoseCamera(const CLNF& clnf_model, double fx, double fy, double cx, double cy)
 {
@@ -173,7 +173,7 @@ cv::Vec6d LandmarkDetector::GetCorrectedPoseCamera(const CLNF& clnf_model, doubl
 
 		// Solving the PNP model
 
-		// The camera matrix
+		// The utils matrix
 		cv::Matx33d camera_matrix(fx, 0, cx, 0, fy, cy, 0, 0, 1);
 		
 		cv::Vec3d vec_trans(X, Y, Z);
@@ -181,7 +181,7 @@ cv::Vec6d LandmarkDetector::GetCorrectedPoseCamera(const CLNF& clnf_model, doubl
 		
 		cv::solvePnP(landmarks_3D, landmarks_2D, camera_matrix, cv::Mat(), vec_rot, vec_trans, true);
 
-		// Here we correct for the camera orientation, for this need to determine the angle the camera makes with the head pose
+		// Here we correct for the utils orientation, for this need to determine the angle the utils makes with the head pose
 		double z_x = cv::sqrt(vec_trans[0] * vec_trans[0] + vec_trans[2] * vec_trans[2]);
 		double eul_x = atan2(vec_trans[1], z_x);
 
@@ -323,7 +323,7 @@ bool LandmarkDetector::DetectLandmarksInVideo(const cv::Mat_<uchar> &grayscale_i
 {
 	if(bounding_box.width > 0)
 	{
-		// calculate the local and global parameters from the generated 2D shape (mapping from the 2D to 3D because camera params are unknown)
+		// calculate the local and global parameters from the generated 2D shape (mapping from the 2D to 3D because utils params are unknown)
 		clnf_model.params_local.setTo(0);
 		clnf_model.pdm.CalcParams(clnf_model.params_global, bounding_box, clnf_model.params_local);		
 
@@ -456,7 +456,7 @@ bool LandmarkDetector::DetectLandmarksInImage(const cv::Mat_<uchar> &grayscale_i
 			clnf_model.hierarchical_models[part].params_local.setTo(0.0);
 		}
 
-		// calculate the local and global parameters from the generated 2D shape (mapping from the 2D to 3D because camera params are unknown)
+		// calculate the local and global parameters from the generated 2D shape (mapping from the 2D to 3D because utils params are unknown)
 		clnf_model.pdm.CalcParams(clnf_model.params_global, bounding_box, clnf_model.params_local, rotation_hypotheses[hypothesis]);
 	
 		bool success = clnf_model.DetectLandmarks(grayscale_image, params);	

@@ -8,7 +8,7 @@
 #include "LandmarkDetectorFunc.h"
 #include "openpose/face/op_face.hpp"
 #include "mtcnn.h"
-
+#include "image_warping.h"
 
 using namespace cv;
 using namespace std;
@@ -18,9 +18,11 @@ using namespace cl::fr;
 using namespace seeta::fd;
 using namespace op::fa;
 using namespace sf::fr;
+using namespace cl::camera;
 namespace fs = boost::filesystem;
 
 
+#define FISHEYE_CAMERA
 
 void remove_overlap_rect(const vector<shared_ptr< LandmarkDetector::CLNF>>& clnf_models,
                          vector<cl::FaceLandmark>& landmarks)
@@ -184,8 +186,12 @@ int main(int argc, char** argv) {
         face_classifier.add_person(name, feature);
     }
 
-
+#ifdef FISHEYE_CAMERA
+    VideoCapture cap("http://192.168.1.200:8080/?action=stream");
+#else
     VideoCapture cap(0);
+#endif
+
     if(!cap.isOpened())
     {
         cout <<"Can't open video!" << endl;
@@ -199,10 +205,22 @@ int main(int argc, char** argv) {
     int64 t1,t0 = cv::getTickCount();
     double fps = 10;
 
+#ifdef FISHEYE_CAMERA
+    FisheyeWarping warping;
+    Fisheye camera;
+    Rect roi = Rect(0, 0, camera.output_width_, camera.output_height_);
+    warping.init(&camera, roi);
+#endif
+
     for(; ;)
     {
         Mat src;
         cap.read(src);
+
+#ifdef FISHEYE_CAMERA
+        warping.undistort_image(src, src);
+#endif
+
         while(!src.empty()){
 
             cv::Mat_<uchar> src_gray;
@@ -326,7 +344,6 @@ int main(int argc, char** argv) {
                     {
                         LandmarkDetector::Draw(src_display, *clnf_models[model].get());
                     }
-                    cout << "certainty: " << clnf_models[model]->detection_certainty << endl;
 
                     string full_msg = "";
                     if(tracking_info[model].recognized){
@@ -350,6 +367,10 @@ int main(int argc, char** argv) {
 
             imshow("tracking_result", src_display);
             cap.read(src);
+
+#ifdef FISHEYE_CAMERA
+            warping.undistort_image(src, src);
+#endif
 
             char key = waitKey(2);
             if(key == 27){
