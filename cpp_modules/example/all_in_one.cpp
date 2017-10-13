@@ -127,6 +127,7 @@ int main(int argc, char** argv) {
     const int FaceWidth = 96;
     const int FaceHeight = 112;
     const double VisualisationBoundary = -0.8;
+    bool verbose = false;
 
     LandmarkDetector::FaceModelParameters model_param;
     model_param.reinit_video_every = 4;
@@ -219,12 +220,17 @@ int main(int argc, char** argv) {
 
 #ifdef FISHEYE_CAMERA
         warping.undistort_image(src, src);
+        Rect detect_mask(0, src.rows/4, src.cols, src.rows/2);
+#else
+        Rect detect_mask(0, 0, src.cols, src.rows);
 #endif
 
+        TickMeter tm;
+        cv::Mat src_display = src.clone();
         while(!src.empty()){
+            src = src(detect_mask);
 
             cv::Mat_<uchar> src_gray;
-            cv::Mat src_display = src.clone();
 
             if(src.channels() == 3)
             {
@@ -246,16 +252,22 @@ int main(int argc, char** argv) {
                     all_models_active = false;
                 }
             }
-
+            if(verbose){
+                tm.reset();tm.start();
+            }
             if(frame_count % DetectFrequency == 0 && !all_models_active)
             {
                 if(face_alignment_1->detect(src, {}, five_init_landmarks)){
                     remove_overlap_rect(clnf_models, five_init_landmarks);
                 }
             }
-
             vector<std::atomic<bool>> detections_used(five_init_landmarks.size());
             bool expected = true;
+
+            if(verbose){
+                tm.stop();
+                LOG(INFO) << "Detection, time: " << tm.getTimeMilli() << " ms";
+            }
 
 
             /**init tracker*/
@@ -284,14 +296,22 @@ int main(int argc, char** argv) {
                 }
             }
 
-
-
             /**batch gpu alignment*/
+            if(verbose){
+                tm.reset();tm.start();
+            }
             face_alignment_2->detect(src, get_all_rect(clnf_models), per_frame_landmarks);
 
+            if(verbose){
+                tm.stop();
+                LOG(INFO) << "Alignment, time: " << tm.getTimeMilli() << " ms";
+            }
 
 
             /**update tracker*/
+            if(verbose){
+                tm.reset();tm.start();
+            }
             #pragma omp parallel for num_threads(CL_NUM_THREADS)
             for(unsigned int i = 0; i < clnf_models.size(); ++i) {
                 if (tracking_info[i].tracking_) {
@@ -301,9 +321,17 @@ int main(int argc, char** argv) {
                                    model_param);
                 }
             }
+            if(verbose){
+                tm.stop();
+                LOG(INFO) << "Tracking, time: " << tm.getTimeMilli() << " ms";
+            }
+
 
 
             /**gpu recognize*/
+            if(verbose){
+                tm.reset();tm.start();
+            }
             for(unsigned int i = 0; i < clnf_models.size(); ++i) {
                 if (tracking_info[i].tracking_ && !tracking_info[i].recognized) {
                     Mat src_aligned = face_alignment_1->align_face(src,
@@ -320,6 +348,11 @@ int main(int argc, char** argv) {
                     }
                 }
             }
+            if(verbose){
+                tm.stop();
+                LOG(INFO) << "Recognition, time: " << tm.getTimeMilli() << " ms";
+            }
+
 
             // Work out the framerate
             if(frame_count % 10 == 0)
@@ -342,7 +375,8 @@ int main(int argc, char** argv) {
 
                     if(clnf_models[model]->detection_certainty < VisualisationBoundary)
                     {
-                        LandmarkDetector::Draw(src_display, *clnf_models[model].get());
+                        Mat src_display_temp = src_display(detect_mask);
+                        LandmarkDetector::Draw(src_display_temp, *clnf_models[model].get());
                     }
 
                     string full_msg = "";
@@ -354,7 +388,7 @@ int main(int argc, char** argv) {
                     cv::Rect_<double> model_rect = clnf_models[model]->GetBoundingBox();
                     Point position(model_rect.x, std::max<int>(0, (model_rect.y-0.2*model_rect.height)));
                     float font_scale = 0.5;
-                    cv::putText(src_display,
+                    cv::putText(src_display(detect_mask),
                                 full_msg,
                                 position,
                                 CV_FONT_HERSHEY_SIMPLEX,
@@ -371,6 +405,8 @@ int main(int argc, char** argv) {
 #ifdef FISHEYE_CAMERA
             warping.undistort_image(src, src);
 #endif
+            src_display.release();
+            src_display = src.clone();
 
             char key = waitKey(2);
             if(key == 27){

@@ -155,7 +155,7 @@ public:
 	bool init_tracker(const cv::Mat_<uchar> &image, const vector<cv::Point2f>&landmarks, FaceModelParameters& params);
 	bool update_tracker(const cv::Mat_<uchar> &image, const vector<cv::Point2f>&landmarks, FaceModelParameters& params);
 
-	// Gets the shape of the current detected landmarks in utils space (given utils calibration)
+	// Gets the shape of the current detected landmarks in camera space (given camera calibration)
 	// Can only be called after a call to DetectLandmarksInVideo or DetectLandmarksInImage
 	cv::Mat_<double> GetShape(double fx, double fy, double cx, double cy) const;
 

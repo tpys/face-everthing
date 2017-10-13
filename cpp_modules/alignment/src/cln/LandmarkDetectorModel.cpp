@@ -1075,7 +1075,7 @@ double CLNF::NU_RLMS(cv::Vec6d& final_global, cv::Mat_<double>& final_local, con
 
 }
 
-// Getting a 3D shape model from the current detected landmarks (in utils space)
+// Getting a 3D shape model from the current detected landmarks (in camera space)
 cv::Mat_<double> CLNF::GetShape(double fx, double fy, double cx, double cy) const
 {
 	int n = this->detected_landmarks.rows/2;

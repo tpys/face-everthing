@@ -7,7 +7,7 @@ option(USE_OPENMP      "Set to ON to build use openmp"  ON)
 option(USE_SSE         "Set to ON to build use SSE"  ON)
 
 # Use C++11
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -std=c++11")
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -gencode arch=compute_61,code=sm_61)
 
 
@@ -83,7 +83,7 @@ if (BUILD_EXAMPLES)
 
     add_executable(all_in_one
             cpp_modules/example/all_in_one.cpp
-            cpp_modules/utils/src/image_warping.cpp)
+            cpp_modules/camera/src/image_warping.cpp)
     target_link_libraries(all_in_one ${face_app_libs})
 
     add_executable(mtcnn_alig_dataset

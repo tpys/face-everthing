@@ -68,7 +68,7 @@ void get_video_input_output_params(vector<string> &input_video_files, vector<str
 		valid[i] = true;
 	}
 
-	// By default use rotation with respect to utils (not world coordinates)
+	// By default use rotation with respect to camera (not world coordinates)
 	world_coordinates_pose = false;
 
     // By default use DIVX codec
