@@ -38,8 +38,8 @@ currently reconstruction is not available.
 #### Complie
 
 Install all requirements
-git clone https://github.com/wy1iu/sphereface.git
-change line 44 & 45 in CMakeList.txt to your spherecaffe corresponding directory
+- git clone https://github.com/tpys/face-everthing.git
+- change line 44 & 45 in CMakeList.txt to your spherecaffe corresponding directory
 
 #### Run Example
 
