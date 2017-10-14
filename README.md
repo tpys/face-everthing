@@ -36,11 +36,10 @@ currently reconstruction is not available.
 - [SphereCaffe](https://github.com/wy1iu/sphereface/tree/master/tools/caffe-sphereface)
 - CUDA (>=8.0)
 #### Complie
-
-Install all requirements
+- Install all requirements
 - git clone https://github.com/tpys/face-everthing.git
 - change line 44 & 45 in CMakeList.txt to your spherecaffe corresponding directory
-
+- cd face-everthing && mkdir build && cd build && make -j4
 #### Run Example
 
 ## TODO:
