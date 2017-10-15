@@ -155,7 +155,7 @@ void PDM::CalcShape2D(cv::Mat_<double>& out_shape, const cv::Mat_<double>& param
 	// get the rotation matrix from the euler angles
 	cv::Vec3d euler(params_global[1], params_global[2], params_global[3]);
 	cv::Matx33d currRot = Euler2RotationMatrix(euler);
-	
+
 	// get the 3D shape of the object
 	cv::Mat_<double> Shape_3D = mean_shape + princ_comp * params_local;
 
@@ -164,6 +164,7 @@ void PDM::CalcShape2D(cv::Mat_<double>& out_shape, const cv::Mat_<double>& param
 	{
 		out_shape.create(2*n,1);
 	}
+
 	// for every vertex
 	for(int i = 0; i < n; i++)
 	{
@@ -171,6 +172,7 @@ void PDM::CalcShape2D(cv::Mat_<double>& out_shape, const cv::Mat_<double>& param
 		out_shape.at<double>(i  ,0) = s * ( currRot(0,0) * Shape_3D.at<double>(i, 0) + currRot(0,1) * Shape_3D.at<double>(i+n  ,0) + currRot(0,2) * Shape_3D.at<double>(i+n*2,0) ) + tx;
 		out_shape.at<double>(i+n,0) = s * ( currRot(1,0) * Shape_3D.at<double>(i, 0) + currRot(1,1) * Shape_3D.at<double>(i+n  ,0) + currRot(1,2) * Shape_3D.at<double>(i+n*2,0) ) + ty;
 	}
+
 }
 
 //===========================================================================
@@ -221,11 +223,10 @@ void PDM::CalcParams(cv::Vec6d& out_params_global, const cv::Rect_<double>& boun
 // The bounding box describes face from left outline to right outline of the face and chin to eyebrows
 void PDM::CalcBoundingBox(cv::Rect& out_bounding_box, const cv::Vec6d& params_global, const cv::Mat_<double>& params_local)
 {
-	
 	// get the shape instance based on local params
 	cv::Mat_<double> current_shape;
 	CalcShape2D(current_shape, params_local, params_global);
-	
+
 	// Get the width of expected shape
 	double min_x;
 	double max_x;
@@ -495,9 +496,9 @@ void PDM::UpdateModelParameters(const cv::Mat_<float>& delta_p, cv::Mat_<float>&
 
 void PDM::CalcParams(cv::Vec6d& out_params_global, const cv::Mat_<double>& out_params_local, const cv::Mat_<double>& landmark_locations, const cv::Vec3d rotation)
 {
-		
-	int m = this->NumberOfModes();
 
+
+	int m = this->NumberOfModes();
 	int n = this->NumberOfPoints();
 
 	cv::Mat_<int> visi_ind_2D(n * 2, 1, 1);
@@ -522,7 +523,7 @@ void PDM::CalcParams(cv::Vec6d& out_params_global, const cv::Mat_<double>& out_p
 
 	for(int i = 0; i < n * 3; ++i)
 	{
-		if(visi_ind_3D.at<int>(i) == 1)
+//		if(visi_ind_3D.at<int>(i) == 1)
 		{
 			cv::vconcat(M, this->mean_shape.row(i), M);
 			cv::vconcat(V, this->princ_comp.row(i), V);
@@ -534,7 +535,6 @@ void PDM::CalcParams(cv::Vec6d& out_params_global, const cv::Mat_<double>& out_p
 
 	this->mean_shape = M;
 	this->princ_comp = V;
-
 	// The new number of points
 	n  = M.rows / 3;
 
@@ -574,7 +574,7 @@ void PDM::CalcParams(cv::Vec6d& out_params_global, const cv::Mat_<double>& out_p
 	cv::Vec3d rotation_init = rotation;
 	cv::Matx33d R = Euler2RotationMatrix(rotation_init);
 	cv::Vec2d translation((min_x + max_x) / 2.0, (min_y + max_y) / 2.0);
-    
+
 	cv::Mat_<float> loc_params(this->NumberOfModes(),1, 0.0);
 	cv::Vec6d glob_params(scaling, rotation_init[0], rotation_init[1], rotation_init[2], translation[0], translation[1]);
 
@@ -584,7 +584,7 @@ void PDM::CalcParams(cv::Vec6d& out_params_global, const cv::Mat_<double>& out_p
 	cv::Mat_<double> shape_3D = M + V * loc_params_d;
 
 	cv::Mat_<double> curr_shape(2*n, 1);
-	
+
 	// for every vertex
 	for(int i = 0; i < n; i++)
 	{
@@ -607,8 +607,7 @@ void PDM::CalcParams(cv::Vec6d& out_params_global, const cv::Mat_<double>& out_p
 	cv::Mat_<float> WeightMatrix = cv::Mat_<float>::eye(n*2, n*2);
 
 	int not_improved_in = 0;
-
-    for (size_t i = 0; i < 1000; ++i)
+	for (size_t i = 0; i < 100; ++i)
 	{
 		// get the 3D shape of the object
 		cv::Mat_<double> loc_params_d;

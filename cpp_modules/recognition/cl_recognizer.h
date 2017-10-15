@@ -94,7 +94,7 @@ namespace cl{
                 auto iter = std::max_element(begin(scores), end(scores));
                 int max_id =  std::distance(scores.begin(), iter);
                 float max_score = scores[max_id];
-                std::cout << "max_score: " << max_score << " max_id: " << max_id << std::endl;
+//                std::cout << "max_score: " << max_score << " max_id: " << max_id << std::endl;
                 if(max_score < score_thresh_){
                     return -1;
                 }

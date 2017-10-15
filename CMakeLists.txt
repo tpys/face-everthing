@@ -57,7 +57,6 @@ foreach(file_path ${include_files})
     include_directories(${dir_path})
 endforeach()
 
-
 file(GLOB_RECURSE detection_src cpp_modules/detection/src/*.cpp)
 file(GLOB_RECURSE alignment_src cpp_modules/alignment/src/*.cpp cpp_modules/alignment/src/*.c)
 file(GLOB_RECURSE recognition_src cpp_modules/recognition/src/*.cpp)
@@ -77,10 +76,16 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cpp_modules/tracking)
 if (BUILD_EXAMPLES)
     message(STATUS "Build with examples.")
     list(APPEND face_app_libs detection_lib alignment_lib recognition_lib core face utilities caffe glog ${OpenCV_LIBS})
-    add_executable(face_alignment cpp_modules/example/face_alignment.cpp)
-    target_link_libraries(face_alignment ${face_app_libs})
-    add_executable(video_conference cpp_modules/example/video_conference.cpp)
-    target_link_libraries(video_conference ${face_app_libs})
-    add_executable(mtcnn_align_dataset cpp_modules/example/mtcnn_align_dataset.cpp)
-    target_link_libraries(mtcnn_align_dataset ${face_app_libs} boost_filesystem)
+    add_executable(alignment_benchmark
+            cpp_modules/example/alignment_benchmark.cpp)
+    target_link_libraries(alignment_benchmark ${face_app_libs})
+
+    add_executable(all_in_one
+            cpp_modules/example/all_in_one.cpp
+            cpp_modules/camera/src/image_warping.cpp)
+    target_link_libraries(all_in_one ${face_app_libs})
+
+    add_executable(mtcnn_alig_dataset
+            cpp_modules/example/mtcnn_align_dataset.cpp)
+    target_link_libraries(mtcnn_alig_dataset ${face_app_libs} boost_filesystem)
 endif()

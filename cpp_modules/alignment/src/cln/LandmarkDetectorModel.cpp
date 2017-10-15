@@ -638,7 +638,6 @@ bool CLNF::update_tracker(const cv::Mat_<uchar> &image,
         detected_landmarks.at<double>(i) = landmarks[i].x;
         detected_landmarks.at<double>(i + N) = landmarks[i].y;
     }
-
     pdm.CalcParams(params_global, params_local, detected_landmarks);
     pdm.CalcShape2D(detected_landmarks, params_local, params_global);
 

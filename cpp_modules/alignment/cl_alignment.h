@@ -65,8 +65,6 @@ namespace cl {
                 cv::circle(display_img, cv::Point(e.x, e.y), 1 * DrawMultiplier, cv::Scalar(255, 0, 0), thickness_2, CV_AA, DrawShiftbits);
 
             }
-            auto face_rect = landmark2rect(landmarks);
-            cv::rectangle(display_img, face_rect, cv::Scalar(255, 0, 0), 2);
         }
 
         static void draw(const cl::FaceBox& face_box, const cl::FaceLandmark& landmarks, cv::Mat& display_img) {

@@ -379,7 +379,6 @@ bool LandmarkDetector::update_tracker(const cv::Mat_<uchar> &grayscale_image,
         if(params.use_face_template && !clnf_model.face_template.empty() && clnf_model.detection_success) {
             CorrectGlobalParametersVideo(grayscale_image, clnf_model, params);
         }
-
         clnf_model.detection_success = clnf_model.update_tracker(grayscale_image, landmarks, params);
         if(!clnf_model.detection_success)
         {
