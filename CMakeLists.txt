@@ -81,7 +81,6 @@ if (BUILD_EXAMPLES)
     target_link_libraries(alignment_benchmark ${face_app_libs})
 
     add_executable(all_in_one
-            cpp_modules/example/all_in_one.cpp
             cpp_modules/camera/src/image_warping.cpp)
     target_link_libraries(all_in_one ${face_app_libs})
 

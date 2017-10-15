@@ -29,21 +29,21 @@ using namespace op::fa;
 
 int main(int argc, char** argv) {
 
-    argv[1] = "/home/tpys/face-lib/trained_models/detection/seeta_fd_frontal_v1.0.bin";
-    argv[2] = "/home/tpys/face-lib/trained_models/alignment/cln/main_clnf_general.txt";
-    argv[3] = "/home/tpys/face-lib/trained_models/alignment/es/model.txt";
-    argv[4] = "/home/tpys/face-lib/trained_models/alignment/lbf/LBF.model";
-    argv[5] = "/home/tpys/face-lib/trained_models/alignment/lbf/Regressor.model";
-    argv[6] = "/home/tpys/face-lib/trained_models/alignment/op_face/pose_deploy.prototxt";
-    argv[7] = "/home/tpys/face-lib/trained_models/alignment/op_face/pose_iter_116000.caffemodel";
+    argv[1] = "/home/tpys/projects/cl-face/trained_models/detection/seeta_fd_frontal_v1.0.bin";
+    argv[2] = "/home/tpys/projects/cl-face/trained_models/alignment/cln/main_clnf_general.txt";
+    argv[3] = "/home/tpys/projects/cl-face/trained_models/alignment/es/model.txt";
+    argv[4] = "/home/tpys/projects/cl-face/trained_models/alignment/lbf/LBF.model";
+    argv[5] = "/home/tpys/projects/cl-face/trained_models/alignment/lbf/Regressor.model";
+    argv[6] = "/home/tpys/projects/cl-face/trained_models/alignment/op_face/pose_deploy.prototxt";
+    argv[7] = "/home/tpys/projects/cl-face/trained_models/alignment/op_face/pose_iter_116000.caffemodel";
 
     /**for mtcnn model*/
-    argv[8] = "/home/tpys/face-lib/trained_models/detection/det1.prototxt";
-    argv[9] = "/home/tpys/face-lib/trained_models/detection/det2.prototxt";
-    argv[10] = "/home/tpys/face-lib/trained_models/detection/det3.prototxt";
-    argv[11] = "/home/tpys/face-lib/trained_models/detection/det1.caffemodel";
-    argv[12] = "/home/tpys/face-lib/trained_models/detection/det2.caffemodel";
-    argv[13] = "/home/tpys/face-lib/trained_models/detection/det3.caffemodel";
+    argv[8] = "/home/tpys/projects/cl-face/trained_models/detection/det1.prototxt";
+    argv[9] = "/home/tpys/projects/cl-face/trained_models/detection/det2.prototxt";
+    argv[10] = "/home/tpys/projects/cl-face/trained_models/detection/det3.prototxt";
+    argv[11] = "/home/tpys/projects/cl-face/trained_models/detection/det1.caffemodel";
+    argv[12] = "/home/tpys/projects/cl-face/trained_models/detection/det2.caffemodel";
+    argv[13] = "/home/tpys/projects/cl-face/trained_models/detection/det3.caffemodel";
 
 
 
