@@ -29,8 +29,6 @@ currently reconstruction is not available.
 <img src='result/aligned.jpg' title='mtcnn align example' style='max-width:600px'></img>
 </p>
 
-#### simple alignment benchmark, including 4 methods
-
 #### put all in one, mtcnn detection, openpose alignment, cln tracking and sphereface recognition
 
 ## Installation
