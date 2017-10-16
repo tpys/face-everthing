@@ -1,6 +1,6 @@
 # Face Everthing
 face detection alignment recognition reconstruction base on some projects on github, aim to build state of art face system.
-currently reconstruction is not available.
+currently reconstruction is not available, code is not elegant.
 
 ## Reference
 
@@ -30,6 +30,8 @@ currently reconstruction is not available.
 </p>
 
 #### put all in one, mtcnn detection, openpose alignment, cln tracking and sphereface recognition
+
+<p align="center"><img src="result/all.gif" /></p>
 
 ## Installation
 #### Requirements
