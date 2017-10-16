@@ -26,7 +26,7 @@ currently reconstruction is not available.
 #### mtcnn align lfw dataset (cpp implement matlab cp2tform)
 
 <p align='center'>
-<img src='docs/images/aligned.jgp' title='mtcnn align example' style='max-width:600px'></img>
+<img src='result/aligned.jpg' title='mtcnn align example' style='max-width:600px'></img>
 </p>
 
 #### simple alignment benchmark, including 4 methods
