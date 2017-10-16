@@ -29,58 +29,60 @@ using namespace op::fa;
 
 int main(int argc, char** argv) {
 
-    argv[1] = "/home/tpys/projects/cl-face/trained_models/detection/seeta_fd_frontal_v1.0.bin";
-    argv[2] = "/home/tpys/projects/cl-face/trained_models/alignment/cln/main_clnf_general.txt";
-    argv[3] = "/home/tpys/projects/cl-face/trained_models/alignment/es/model.txt";
-    argv[4] = "/home/tpys/projects/cl-face/trained_models/alignment/lbf/LBF.model";
-    argv[5] = "/home/tpys/projects/cl-face/trained_models/alignment/lbf/Regressor.model";
-    argv[6] = "/home/tpys/projects/cl-face/trained_models/alignment/op_face/pose_deploy.prototxt";
-    argv[7] = "/home/tpys/projects/cl-face/trained_models/alignment/op_face/pose_iter_116000.caffemodel";
+    /*must change these two lines to yours**/
+    const string detection_dir = "/home/tpys/projects/cl-face/trained_models/detection"; // mtcnn model dir
+    const string alignment_dir = "/home/tpys/projects/cl-face/trained_models/alignment"; //dataset need to be align
 
-    /**for mtcnn model*/
-    argv[8] = "/home/tpys/projects/cl-face/trained_models/detection/det1.prototxt";
-    argv[9] = "/home/tpys/projects/cl-face/trained_models/detection/det2.prototxt";
-    argv[10] = "/home/tpys/projects/cl-face/trained_models/detection/det3.prototxt";
-    argv[11] = "/home/tpys/projects/cl-face/trained_models/detection/det1.caffemodel";
-    argv[12] = "/home/tpys/projects/cl-face/trained_models/detection/det2.caffemodel";
-    argv[13] = "/home/tpys/projects/cl-face/trained_models/detection/det3.caffemodel";
+    const vector<string> argvs = {
+            detection_dir + "/det1.prototxt",
+            detection_dir + "/det2.prototxt",
+            detection_dir + "/det3.prototxt",
+            detection_dir + "/det1.caffemodel",
+            detection_dir + "/det2.caffemodel",
+            detection_dir + "/det3.caffemodel",
 
+            alignment_dir + "/cln/main_clnf_general.txt",
+            alignment_dir  + "/es/model.txt",
+            alignment_dir + "/lbf/LBF.model",
+            alignment_dir + "/lbf/Regressor.model",
+            alignment_dir + "/op_face/pose_deploy.prototxt",
+            alignment_dir + "/op_face/pose_iter_116000.caffemodel",
+    };
 
 
     /**mtcnn face detector*/
     std::shared_ptr<Detector> face_detector = std::make_shared<mtcnn::fd::FaceDetector>();
-    if(!face_detector->load_model({argv[8], argv[9], argv[10]},{argv[11], argv[12], argv[13]}))
+    if(!face_detector->load_model({argvs[0], argvs[1], argvs[2]},{argvs[3], argvs[4], argvs[5]}))
     {
         cout <<"Can't load face detection model!" << endl;
         return  -1;
     }
 
 
-
 #if CLN
     std::shared_ptr<Alignment> face_alignment = std::make_shared<CLNAlignment>();
-    if(!face_alignment->load_model({}, {argv[2]}))
+    if(!face_alignment->load_model({}, {argvs[6]}))
     {
         cout <<"Can't load face alignment model!" << endl;
         return -2;
     }
 #elif ES
     std::shared_ptr<Alignment> face_alignment = std::make_shared<ExplicitShape>();
-    if(!face_alignment->load_model({}, {argv[3]}))
+    if(!face_alignment->load_model({}, {argvs[7]}))
     {
         cout <<"Can't load face alignment model!" << endl;
         return -2;
     }
 #elif LBF
     std::shared_ptr<Alignment> face_alignment = std::make_shared<LBFAlignment>();
-    if(!face_alignment->load_model({argv[4]}, {argv[5]}))
+    if(!face_alignment->load_model({argvs[8]}, {argvs[9]}))
     {
         cout <<"Can't load face alignment model!" << endl;
         return -2;
     }
 #elif OPENPOSE
     std::shared_ptr<Alignment> face_alignment = std::make_shared<OPFace>();
-    if(!face_alignment->load_model({argv[6]}, {argv[7]}))
+    if(!face_alignment->load_model({argvs[10]}, {argvs[11]}))
     {
         cout <<"Load alignment model failed!" << endl;
         return -2;

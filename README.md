@@ -23,7 +23,11 @@ currently reconstruction is not available.
 0. [Large-Margin Softmax Loss for Convolutional Neural Networks](https://www.google.com.hk/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=0ahUKEwi3ktO67O7WAhWBfrwKHV_vCTQQFgguMAE&url=https%3A%2F%2Farxiv.org%2Fpdf%2F1612.02295&usg=AOvVaw3Xig5JT8V50edhyAvFYgqS)
 
 ## Features
-#### mtcnn align lfw dataset in seconds (cpp implement matlab cp2tform)
+#### mtcnn align lfw dataset (cpp implement matlab cp2tform)
+
+<p align='center'>
+<img src='docs/images/aligned.jgp' title='mtcnn align example' style='max-width:600px'></img>
+</p>
 
 #### simple alignment benchmark, including 4 methods
 

@@ -46,7 +46,7 @@ namespace cl {
 
 
         private:
-            DISABLE_COPY_AND_ASSIGN(Detector);
+        DISABLE_COPY_AND_ASSIGN(Detector);
 
         };
     }

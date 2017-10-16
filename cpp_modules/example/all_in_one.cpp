@@ -22,7 +22,7 @@ using namespace cl::camera;
 namespace fs = boost::filesystem;
 
 
-#define FISHEYE_CAMERA
+//#define FISHEYE_CAMERA
 
 void remove_overlap_rect(const vector<shared_ptr< LandmarkDetector::CLNF>>& clnf_models,
                          vector<cl::FaceLandmark>& landmarks)
@@ -99,8 +99,8 @@ int main(int argc, char** argv) {
     const string mtcnn_model_dir = "/home/tpys/projects/cl-face/trained_models/detection";
     const string openpose_model_dir = "/home/tpys/projects/cl-face/trained_models/alignment/op_face";
     const string recognition_model_dir = "/home/tpys/projects/cl-face/trained_models/recognition";
-    const string facedb_dir = "";
-    const string video_dir = "";
+    const string facedb_dir = "/home/tpys/projects/cl-face/data/facedb";
+    const string video_dir = "/home/tpys/projects/cl-face/data";
 
 
     const vector<string> argvs = {
@@ -125,13 +125,14 @@ int main(int argc, char** argv) {
         return -1;
 
     /**must setting global variables*/
-    const int MaxFaceNum = 4;
+    const int MaxFaceNum = 2;
     const int DetectFrequency = 8;
     const int FaceWidth = 96;
     const int FaceHeight = 112;
     const double VisualisationBoundary = -0.8;
     bool verbose = false;
     bool enable_recognize = true;
+    bool save_video = true;
 
     LandmarkDetector::FaceModelParameters model_param;
     model_param.reinit_video_every = 4;
@@ -194,6 +195,7 @@ int main(int argc, char** argv) {
         face_classifier.add_person(name, feature);
     }
 
+
     VideoCapture cap;
     if(!cap.open(video_dir)){
         cap.open(0);
@@ -203,6 +205,9 @@ int main(int argc, char** argv) {
         cout <<"Can't open video!" << endl;
         return  -5;
     }
+    VideoWriter video(video_dir + "/processed.avi", CV_FOURCC('M', 'J', 'P', 'G'), 25.0, Size(640, 480));
+    save_video &= video.isOpened();
+
     namedWindow("tracking_result");
     moveWindow("tracking_result", 100, 100);
 
@@ -278,16 +283,16 @@ int main(int argc, char** argv) {
 
 
             /**init tracker*/
-            #pragma omp parallel for num_threads(CL_NUM_THREADS)
+#pragma omp parallel for num_threads(CL_NUM_THREADS)
             for(unsigned int i = 0; i < clnf_models.size(); ++i) {
-                if (clnf_models[i]->failures_in_a_row > 4) {
+                if (clnf_models[i]->failures_in_a_row > 6) {
                     tracking_info[i].reset();
                     clnf_models[i]->Reset();
                 }
 
                 if (!tracking_info[i].tracking_) {
                     for (size_t j = 0; j < five_init_landmarks.size(); ++j) {
-                          if(!detections_used[j].compare_exchange_weak(expected, false)) {
+                        if(!detections_used[j].compare_exchange_weak(expected, false)) {
                             clnf_models[i]->Reset();
                             clnf_models[i]->detection_success = false;
 
@@ -296,8 +301,8 @@ int main(int argc, char** argv) {
                                          five_init_landmarks[j].points_,
                                          *clnf_models[i].get(),
                                          model_param);
-                              tracking_info[i].tracking_ = true;
-                              break;
+                            tracking_info[i].tracking_ = true;
+                            break;
                         }
                     }
                 }
@@ -320,7 +325,7 @@ int main(int argc, char** argv) {
             if(verbose){
                 tm.reset();tm.start();
             }
-            #pragma omp parallel for num_threads(CL_NUM_THREADS)
+#pragma omp parallel for num_threads(CL_NUM_THREADS)
             for(unsigned int i = 0; i < clnf_models.size(); ++i) {
                 if (tracking_info[i].tracking_) {
                     update_tracker(src_gray,
@@ -337,16 +342,17 @@ int main(int argc, char** argv) {
 
 
             /**gpu recognize*/
+            Mat src_aligned;
             if(verbose){
                 tm.reset();tm.start();
             }
             if(enable_recognize)
                 for(unsigned int i = 0; i < clnf_models.size(); ++i) {
                     if (tracking_info[i].tracking_ &&  !tracking_info[i].recognized) {
-                        Mat src_aligned = face_alignment_1->align_face(src,
-                                                                     per_frame_landmarks[i],
-                                                                     FaceWidth,
-                                                                     FaceHeight);
+                        src_aligned = face_alignment_1->align_face(src,
+                                                                   per_frame_landmarks[i],
+                                                                   FaceWidth,
+                                                                   FaceHeight);
 
                         auto feature = face_recognizer->extract_feature(src_aligned);
                         tracking_info[i].class_id_ = face_classifier.identify(feature);
@@ -370,11 +376,14 @@ int main(int argc, char** argv) {
                 fps = 10.0 / (double(t1-t0)/cv::getTickFrequency());
                 t0 = t1;
             }
-            char fpsC[255];
-            sprintf(fpsC, "%d", (int)fps);
-            string fpsSt("FPS:");
-            fpsSt += fpsC;
-            cv::putText(src_display, fpsSt, cv::Point(10,20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255,0,0), 1, CV_AA);
+
+            if(verbose){
+                char fpsC[255];
+                sprintf(fpsC, "%d", (int)fps);
+                string fpsSt("FPS:");
+                fpsSt += fpsC;
+                cv::putText(src_display, fpsSt, cv::Point(10,20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255,0,0), 1, CV_AA);
+            }
 
 
             // Go through every model and visualise the results
@@ -409,7 +418,11 @@ int main(int argc, char** argv) {
             }
 
             imshow("tracking_result", src_display);
+            if(save_video){
+                video << src_display;
+            }
             cap.read(src);
+
 
 #ifdef FISHEYE_CAMERA
             warping.undistort_image(src, src);
@@ -417,22 +430,26 @@ int main(int argc, char** argv) {
             src_display.release();
             src_display = src.clone();
 
+
+            frame_count++;
+
             char key = waitKey(2);
             if(key == 27){
                 break;
             }
-            frame_count++;
+            else if(key == 's'){
+                imwrite(facedb_dir + "/aligned_face.jpg", src_aligned);
+            }
         }
 
 
-
-
-        //ToDo clear memory
         frame_count = 0;
         for(size_t model=0; model < clnf_models.size(); ++model)
         {
             clnf_models[model]->Reset();
             tracking_info[model].reset();
         }
+        video.release();
+        break;
     }
 }
