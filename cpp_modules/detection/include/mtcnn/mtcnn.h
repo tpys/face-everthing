@@ -47,6 +47,7 @@ namespace mtcnn {
                 ORIENT_UP,
                 ORIENT_DOWN,
             };
+
             struct BoundingBox{
                 //rect two points
                 float x1, y1;

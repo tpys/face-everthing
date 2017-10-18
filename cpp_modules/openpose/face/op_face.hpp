@@ -17,7 +17,7 @@ namespace op{
 
         class OPFace:public cl::fa::Alignment{
         public:
-            OPFace(int input_width = 368, int input_height = 368, int gpu_id = 0):
+            OPFace(int input_width = 320, int input_height = 320, int gpu_id = 0):
                     input_width_(input_width), input_height_(input_height), gpu_id_(gpu_id) {}
             virtual ~OPFace(){}
 

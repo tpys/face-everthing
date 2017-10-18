@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
             ++counter;
 
             char msg[256];
-            if(counter % 1000 == 0){
+            if(counter % 1 == 0){
                 sprintf(msg, "process: %d/%d", counter, total_num);
                 cout << msg << endl;
             }
