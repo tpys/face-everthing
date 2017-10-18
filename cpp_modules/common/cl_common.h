@@ -21,7 +21,7 @@ private:                                                                       \
 #endif
 
 
-#define CL_NUM_THREADS 4
+#define CL_NUM_THREADS 8
 #define USE_CAFFE 1
 
 namespace cl
@@ -59,6 +59,7 @@ namespace cl
 
     struct FaceLandmark{
         FaceLandmark():points_{}, scores_{} {}
+        FaceLandmark(const std::vector<cv::Point2f>& points):points_(points) {}
         FaceLandmark(const std::vector<cv::Point2f>& points,
                      const std::vector<float>& scores):points_(points), scores_(scores) {}
 
