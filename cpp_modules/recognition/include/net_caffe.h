@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 #include <caffe/net.hpp>
-
 #include "cl_common.h"
 
 namespace cl

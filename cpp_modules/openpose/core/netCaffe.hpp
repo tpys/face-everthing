@@ -1,4 +1,3 @@
-#ifdef USE_CAFFE
 #ifndef OPENPOSE_CORE_NET_CAFFE_HPP
 #define OPENPOSE_CORE_NET_CAFFE_HPP
 
@@ -45,4 +44,3 @@ namespace op
 }
 
 #endif // OPENPOSE_CORE_NET_CAFFE_HPP
-#endif

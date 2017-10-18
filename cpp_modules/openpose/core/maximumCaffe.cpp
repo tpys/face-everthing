@@ -1,4 +1,3 @@
-#ifdef USE_CAFFE
 #include <openpose/core/maximumBase.hpp>
 #include <openpose/core/maximumCaffe.hpp>
 
@@ -113,5 +112,3 @@ namespace op
 
     INSTANTIATE_CLASS(MaximumCaffe);
 }
-
-#endif

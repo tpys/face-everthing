@@ -7,11 +7,13 @@ option(USE_OPENMP      "Set to ON to build use openmp"  ON)
 option(USE_SSE         "Set to ON to build use SSE"  ON)
 
 # Use C++11
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -std=c++11")
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -gencode arch=compute_61,code=sm_61)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11")
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -gencode arch=compute_50,code=sm_50
+        -gencode arch=compute_52,code=sm_52
+        -gencode arch=compute_60,code=sm_60
+        -gencode arch=compute_61,code=sm_61
+        -gencode arch=compute_61,code=compute_61)
 
-
-# Use SSE
 if (USE_SSE)
     add_definitions(-DUSE_SSE)
     message(STATUS "Use SSE")
@@ -34,7 +36,6 @@ endif()
 find_package(OpenCV)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-
 #Use Boost
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
@@ -43,13 +44,11 @@ link_directories(${Boost_LIBRARY_DIR})
 #Use Caffe
 include_directories(/home/tpys/tools/caffe/distribute/include)
 link_directories(/home/tpys/tools/caffe/distribute/lib)
-add_definitions(-DUSE_CAFFE)
-
 
 #Use CUDA
 find_package(CUDA REQUIRED)
 include_directories(/usr/local/cuda-8.0/include)
-
+link_directories(/usr/local/cuda-8.0/lib64/)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB_RECURSE include_files ${CMAKE_CURRENT_SOURCE_DIR}/cpp_modules/*.h)
@@ -81,8 +80,7 @@ if (BUILD_EXAMPLES)
             cpp_modules/example/alignment_benchmark.cpp)
     target_link_libraries(alignment_benchmark ${face_app_libs})
 
-    add_executable(all_in_one
-            cpp_modules/example/all_in_one.cpp
+    add_executable(all_in_one cpp_modules/example/all_in_one.cpp
             cpp_modules/camera/src/image_warping.cpp)
     target_link_libraries(all_in_one ${face_app_libs})
 

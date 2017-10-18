@@ -33,40 +33,31 @@ static std::vector<std::string> get_file_list(const std::string& path)
 
 
 int main(int argc, char** argv) {
+    /*must change these there lines to yours**/
+    const string model_dir = "/home/tpys/projects/cl-face/trained_models/detection"; // mtcnn model dir
+    const string dataset_dir = "/home/tpys/dataset/lfw"; //dataset need to be align
+    const string output_dir = "/home/tpys/dataset/lfw_align_112x96";//output aligned dataset
 
-    /**common parameters*/
-    //mtcnn model
-    argv[1] = "/home/tpys/face-lib/trained_models/detection/det1.prototxt";
-    argv[2] = "/home/tpys/face-lib/trained_models/detection/det2.prototxt";
-    argv[3] = "/home/tpys/face-lib/trained_models/detection/det3.prototxt";
-    argv[4] = "/home/tpys/face-lib/trained_models/detection/det1.caffemodel";
-    argv[5] = "/home/tpys/face-lib/trained_models/detection/det2.caffemodel";
-    argv[6] = "/home/tpys/face-lib/trained_models/detection/det3.caffemodel";
-
-    //dataset
-    argv[7] = "/media/tpys/ssd/lfw";
-
-    //output
-    argv[8] = "/media/tpys/ssd/lfw_mtcnn_align";
-
-    bool verbose = true;
-
-
+    bool verbose = false;//turn on to visulize align result
+    const vector<string> argvs = {
+            model_dir + "/det1.prototxt",
+            model_dir + "/det2.prototxt",
+            model_dir + "/det3.prototxt",
+            model_dir + "/det1.caffemodel",
+            model_dir + "/det2.caffemodel",
+            model_dir + "/det3.caffemodel",
+    };
 
     std::shared_ptr<Alignment> face_alignment = std::make_shared<mtcnn::fd::FaceDetector>();
-    if(!face_alignment->load_model({argv[1], argv[2], argv[3]},{argv[4], argv[5], argv[6]}))
+    if(!face_alignment->load_model({argvs[0], argvs[1], argvs[2]}, {argvs[3], argvs[4], argvs[5]}))
     {
         cout <<"Can't load face detection model!" << endl;
         return  -1;
     }
-    auto image_list = get_file_list(argv[7]);
-
-
+    auto image_list = get_file_list(dataset_dir);
     int64 total_num = image_list.size();
-    fs::path dst_p(argv[8]);
+    fs::path dst_p(output_dir);
     int64 counter = 0;
-
-
 
 
     for(auto& e: image_list){
