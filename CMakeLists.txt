@@ -84,7 +84,7 @@ if (BUILD_EXAMPLES)
             cpp_modules/camera/src/image_warping.cpp)
     target_link_libraries(all_in_one ${face_app_libs})
 
-    add_executable(mtcnn_alig_dataset
+    add_executable(mtcnn_align_dataset
             cpp_modules/example/mtcnn_align_dataset.cpp)
-    target_link_libraries(mtcnn_alig_dataset ${face_app_libs} boost_filesystem)
+    target_link_libraries(mtcnn_align_dataset ${face_app_libs} boost_filesystem)
 endif()

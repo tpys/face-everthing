@@ -23,15 +23,18 @@ currently reconstruction is not available, code is not elegant.
 0. [Large-Margin Softmax Loss for Convolutional Neural Networks](https://www.google.com.hk/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&ved=0ahUKEwi3ktO67O7WAhWBfrwKHV_vCTQQFgguMAE&url=https%3A%2F%2Farxiv.org%2Fpdf%2F1612.02295&usg=AOvVaw3Xig5JT8V50edhyAvFYgqS)
 
 ## Features
-#### mtcnn align lfw dataset (cpp implement matlab cp2tform)
-
+#### mtcnn align casia dataset (cpp implement matlab cp2tform)
+mtcnn success algin 453078 of 455594 images, take about 1.11hour, hope someone can increase detection rate and reduce run time.
 <p align='center'>
-<img src='result/aligned.jpg' title='mtcnn align example' style='max-width:600px'></img>
+<img src='result/aligned.jpg' title='aligned example'></img>
+<img src='result/thumbnail.jpg' title='failed aligned thumbnail'></img>
 </p>
 
 #### put all in one, mtcnn detection, openpose alignment, cln tracking and sphereface recognition
 
-<p align="center"><img src="result/all.gif" /></p>
+<p align="center">
+<img src="result/all.gif" style='max-width:600px'></img>
+</p>
 
 ## Installation
 #### Requirements
@@ -45,7 +48,9 @@ currently reconstruction is not available, code is not elegant.
 - change line 44 & 45 in CMakeList.txt to your spherecaffe corresponding directory
 - cd face-everthing && mkdir build && cd build && make -j4
 #### Run Example
-
+- Download trained model(https://pan.baidu.com/s/1boOOBNL code: juk3)
+- Modify example/mtcnn_align_dataset.cpp, change the input parameters to yours
+- Modify example/all_in_one.cpp, change the input parameters to yours
 ## TODO:
 - [ ] move cln part to tracking modules
 - [ ] add recently fan 2d & 3d alignment
