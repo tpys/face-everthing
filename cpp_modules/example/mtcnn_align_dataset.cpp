@@ -58,28 +58,27 @@ Mat generate_thumbnail(const vector<string>& file_list, int rows, int cols, int 
 
 void test_humbnail(){
     vector<string> image_list = {
-
-        "/home/tpys/dataset/0000045/001.jpg",
-        "/home/tpys/dataset/0000045/002.jpg",
-        "/home/tpys/dataset/0000045/003.jpg",
-        "/home/tpys/dataset/0000045/004.jpg",
-        "/home/tpys/dataset/0000045/005.jpg",
-        "/home/tpys/dataset/0000045/006.jpg",
-        "/home/tpys/dataset/0000045/007.jpg",
-        "/home/tpys/dataset/0000045/008.jpg",
-        "/home/tpys/dataset/0000045/009.jpg",
-        "/home/tpys/dataset/0000045/011.jpg",
-        "/home/tpys/dataset/0000045/012.jpg",
-        "/home/tpys/dataset/0000045/013.jpg",
-        "/home/tpys/dataset/0000045/014.jpg",
-        "/home/tpys/dataset/0000045/015.jpg",
+            "/home/tpys/dataset/0000045/001.jpg",
+            "/home/tpys/dataset/0000045/002.jpg",
+            "/home/tpys/dataset/0000045/003.jpg",
+            "/home/tpys/dataset/0000045/004.jpg",
+            "/home/tpys/dataset/0000045/005.jpg",
+            "/home/tpys/dataset/0000045/006.jpg",
+            "/home/tpys/dataset/0000045/007.jpg",
+            "/home/tpys/dataset/0000045/008.jpg",
+            "/home/tpys/dataset/0000045/009.jpg",
+            "/home/tpys/dataset/0000045/011.jpg",
+            "/home/tpys/dataset/0000045/012.jpg",
+            "/home/tpys/dataset/0000045/013.jpg",
+            "/home/tpys/dataset/0000045/014.jpg",
+            "/home/tpys/dataset/0000045/015.jpg",
     };
-    imwrite("failed_thumbnail.jpg", generate_thumbnail(image_list, 3, 4, 96));
+    imwrite("aligned.jpg", generate_thumbnail(image_list, 3, 4, 96));
 }
 
 int main(int argc, char** argv) {
 
-//    test_humbnail();
+//    test_humbnail();return 0;
 
     /*must change these there lines to yours**/
     const string model_dir = "/home/tpys/projects/cl-face/trained_models/detection"; // mtcnn model dir
