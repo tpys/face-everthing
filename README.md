@@ -25,8 +25,12 @@ currently reconstruction is not available, code is not elegant.
 ## Features
 #### mtcnn align casia dataset (cpp implement matlab cp2tform)
 mtcnn success algin 453078 of 455594 images, take about 1.11hour, hope someone can increase detection rate and reduce run time.
+
 <p align='center'>
 <img src='result/aligned.jpg' title='aligned example'></img>
+</p>
+
+<p align='center'>
 <img src='result/thumbnail.jpg' title='failed aligned thumbnail'></img>
 </p>
 
